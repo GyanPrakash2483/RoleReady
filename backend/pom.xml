@@ -63,11 +63,8 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
     </dependency>
-    <!-- Scheduling (session-data cleanup per FR-PRIV-005) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-scheduling</artifactId>
-    </dependency>
+    <!-- Note: @EnableScheduling/@Scheduled (session-data cleanup per FR-PRIV-005)
+         comes from spring-context via spring-boot-starter-web — no extra starter needed. -->
     <!-- JWT -->
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
