@@ -27,7 +27,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class ExportComponent {
   private api=inject(ApiService); content=''; status=''; pdfUrl:any=null; sourceFormat='original';
-  private resume(){return JSON.parse(localStorage.getItem('rr_resume')||'{}');}
+  private resume(){const r=JSON.parse(localStorage.getItem('rr_resume')||'{}');r.sourceFormat=this.sourceFormat;return r;}
   exportMarkdown(){this.api.exportMarkdown(this.resume()).subscribe({next:(r:any)=>{this.content=r.data?.markdown??'';this.status='Markdown generated.'}});}
   exportLatex(){this.api.exportLatex(this.resume()).subscribe({next:(r:any)=>{this.content=r.data?.latex??'';this.status='LaTeX generated.'}});}
   exportPdf(){this.api.exportPdf(this.resume()).subscribe({next:(blob:any)=>{const url=URL.createObjectURL(blob);this.pdfUrl=url;const a=document.createElement('a');a.href=url;a.download='roleready-resume.pdf';a.click();this.status='PDF generated and previewed.'}});}
