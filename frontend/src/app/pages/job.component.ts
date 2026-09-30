@@ -23,7 +23,7 @@ export class JobComponent {
     if (!this.text.trim()) { this.status = 'Paste a job description first.'; return; }
     this.status = 'Analyzing…';
     this.api.analyzeJd(this.text).subscribe({
-      next: () => (this.status = 'JD analyzed.'),
+      next: (r: any) => { localStorage.setItem('rr_jd', JSON.stringify(r.data ?? r)); this.status = 'JD analyzed.'; },
       error: () => (this.status = 'JD analysis failed.')
     });
   }
