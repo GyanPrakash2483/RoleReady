@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,11 @@ public class ExportService {
     try(var document=new PDDocument(); var out=new ByteArrayOutputStream()){
       PDPage page=new PDPage(PDRectangle.LETTER); document.addPage(page);
       try(var stream=new PDPageContentStream(document,page)){
-        stream.beginText(); stream.setFont(PDType1Font.HELVETICA,11); stream.setLeading(15);
+        stream.beginText(); stream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA),11); stream.setLeading(15);
         stream.newLineAtOffset(50,740);
         for(String line:exportMarkdown(resume).split("\\R")){
           stream.showText(line.replaceAll("[^\\x20-\\x7E]",""));
           stream.newLine();
-          if(stream.getCurrentPage()!=page) break;
         }
         stream.endText();
       }
