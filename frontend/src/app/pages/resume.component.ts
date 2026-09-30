@@ -96,7 +96,7 @@ export class ResumeComponent {
 
   save(){
     this.api.updateResume(this.resume).subscribe({
-      next:()=>this.status='Resume saved for this session.',
+      next:()=>{ localStorage.setItem('rr_resume',JSON.stringify(this.resume)); this.status='Resume saved for this session.'; },
       error:()=>this.status='Unable to save resume.'
     });
   }
