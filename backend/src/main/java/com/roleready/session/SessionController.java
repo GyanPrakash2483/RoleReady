@@ -30,4 +30,10 @@ public class SessionController {
     sessions.delete(id);
     return ResponseEntity.ok(ApiResponse.ok(null));
   }
+
+  @PostMapping("/{id}/end")
+  public ResponseEntity<ApiResponse<Void>> end(@PathVariable String id){
+    sessions.delete(id);
+    return ResponseEntity.ok(ApiResponse.ok(null));
+  }
 }
