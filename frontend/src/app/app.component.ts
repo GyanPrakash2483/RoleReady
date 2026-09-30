@@ -1,5 +1,6 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { ApiService } from './services/api.service';
+import { environment } from './environments/environment';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -42,7 +43,7 @@ export class AppComponent {
   @HostListener('window:beforeunload')
   endSession(){
     if(this.sessionId){
-      navigator.sendBeacon(`${location.protocol}//${location.host.replace(':4200',':8080')}/api/session/${this.sessionId}/end`,new Blob([], {type:'text/plain'}));
+      navigator.sendBeacon(`${environment.apiBaseUrl}/api/session/${this.sessionId}/end`,new Blob([], {type:'text/plain'}));
       localStorage.removeItem('rr_session_id');
     }
   }
