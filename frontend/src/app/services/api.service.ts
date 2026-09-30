@@ -13,6 +13,11 @@ export class ApiService {
   login(email: string, password: string) {
     return this.http.post(`${this.base}/api/auth/login`, { email, password });
   }
+  verifyEmail(token: string) { return this.http.post(`${this.base}/api/auth/verify-email`, { token }); }
+  forgotPassword(email: string) { return this.http.post(`${this.base}/api/auth/forgot-password`, { email }); }
+  resetPassword(token: string, password: string) { return this.http.post(`${this.base}/api/auth/reset-password`, { token, password }); }
+  changePassword(currentPassword: string, newPassword: string) { return this.http.post(`${this.base}/api/auth/change-password`, { currentPassword, newPassword }); }
+  deleteAccount() { return this.http.delete(`${this.base}/api/auth/account`); }
   uploadResume(file: File) {
     const form = new FormData();
     form.append('file', file);
