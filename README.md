@@ -75,6 +75,17 @@ Resumes, JDs, analyses, optimized outputs are **session-only** and must be delet
 Only `users / auth metadata / guest usage` persist (see `backend/.../db/migration/V1__init.sql`).
 `SessionService` is an in-memory stub with TTL — swap for Redis/DB entities before production scale.
 
+## CI/CD
+
+GitHub Actions runs CI for pushes and pull requests. The CD workflow runs on `main`, builds both container images, and then triggers the Render services.
+
+Configure these repository secrets before enabling production deployments:
+
+- `RENDER_BACKEND_DEPLOY_HOOK`
+- `RENDER_FRONTEND_DEPLOY_HOOK`
+
+Never put deploy hooks, database passwords, JWT secrets, OAuth secrets, mail credentials, or Gemini credentials in source control.
+
 ## Next implementation steps
 
 1. Auth: verify-email, forgot/reset/change-password, Google code exchange, account delete.
