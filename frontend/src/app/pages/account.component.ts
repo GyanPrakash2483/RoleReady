@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
+import { environment } from '../environments/environment';
 
 @Component({
   standalone:true,
@@ -41,7 +42,7 @@ export class AccountComponent {
 
   login(){this.api.login(this.email,this.password).subscribe({next:(r:any)=>{localStorage.setItem('rr_token',r.data?.token??'');this.status='Logged in.'},error:()=>this.status='Login failed.'});}
   register(){this.api.register(this.email,this.password).subscribe({next:(r:any)=>{localStorage.setItem('rr_token',r.data?.token??'');this.status='Registered. Check your email.'},error:()=>this.status='Registration failed.'});}
-  google(){window.location.href='http://localhost:8080/oauth2/authorization/google';}
+  google(){window.location.href=environment.apiBaseUrl+'/oauth2/authorization/google';}
   verify(){this.api.verifyEmail(this.verifyToken).subscribe({next:()=>this.status='Email verified.',error:()=>this.status='Verification failed.'});}
   forgot(){this.api.forgotPassword(this.email).subscribe({next:()=>this.status='If the account exists, a reset email was sent.',error:()=>this.status='Unable to request reset.'});}
   reset(){this.api.resetPassword(this.resetToken,this.newPassword).subscribe({next:()=>this.status='Password reset.',error:()=>this.status='Reset failed.'});}
