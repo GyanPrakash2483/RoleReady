@@ -20,6 +20,11 @@ public class OptimizationController {
     return ResponseEntity.ok(ApiResponse.ok(optimizationService.optimize(body)));
   }
 
+  @PostMapping("/final")
+  public ResponseEntity<ApiResponse<Map<String,Object>>> finalResume(@RequestBody Map<String,Object> resume) {
+    return ResponseEntity.ok(ApiResponse.ok(optimizationService.finalResume(resume)));
+  }
+
   @PutMapping("/changes/{id}")
   public ResponseEntity<ApiResponse<Map<String, Object>>> reviewChange(
       @PathVariable String id, @RequestBody Map<String, Object> body) {
