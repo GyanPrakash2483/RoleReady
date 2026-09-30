@@ -1,0 +1,29 @@
+name: e2e
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start stack
+        run: docker compose up -d --build
+      - name: Wait for backend
+        run: |
+          for i in {1..30}; do
+            curl --fail http://localhost:8080/api/health && exit 0
+            sleep 2
+          done
+          exit 1
+      - name: Check frontend
+        run: curl --fail http://localhost:4200/
+      - name: Register and login workflow
+        run: |
+          curl --fail -X POST http://localhost:8080/api/auth/register             -H 'Content-Type: application/json'             -d '{"email":"e2e@example.com","password":"Password123"}'
+          curl --fail -X POST http://localhost:8080/api/auth/login             -H 'Content-Type: application/json'             -d '{"email":"e2e@example.com","password":"Password123"}'
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
