@@ -33,6 +33,10 @@ public class AiService {
     return callGeminiJson(prompt);
   }
 
+  public JsonNode extractJobDescription(String text) {
+    return callGeminiJson(prompts.render("jd-extraction", Map.of("text", text)));
+  }
+
   public JsonNode generateQuestions(JsonNode analysis) {
     return callGeminiJson(prompts.render("question-generation", Map.of("analysis", analysis.toString())));
   }
