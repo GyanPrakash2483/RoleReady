@@ -1,0 +1,17 @@
+name: production-smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Backend health
+        env:
+          BACKEND_URL: ${{ secrets.PRODUCTION_BACKEND_URL }}
+        run: curl --fail --silent --show-error "$BACKEND_URL/api/health"
+      - name: Frontend health
+        env:
+          FRONTEND_URL: ${{ secrets.PRODUCTION_FRONTEND_URL }}
+        run: curl --fail --silent --show-error "$FRONTEND_URL/"
