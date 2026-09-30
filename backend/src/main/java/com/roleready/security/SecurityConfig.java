@@ -15,9 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private final JwtAuthFilter jwtAuthFilter;
+  private final OAuth2LoginSuccessHandler oauth2SuccessHandler;
 
-  public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+  public SecurityConfig(JwtAuthFilter jwtAuthFilter, OAuth2LoginSuccessHandler oauth2SuccessHandler) {
     this.jwtAuthFilter = jwtAuthFilter;
+    this.oauth2SuccessHandler = oauth2SuccessHandler;
   }
 
   @Bean
@@ -27,10 +29,11 @@ public class SecurityConfig {
         .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             // Public: health, docs, auth, guest analysis (rate-limited by guest-use counter)
-            .requestMatchers("/actuator/health", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+            .requestMatchers("/actuator/health", "/api/health", "/v3/api-docs/**", "/swagger-ui/**", "/oauth2/**", "/login/**").permitAll()
             .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/analysis", "/api/resume/upload").permitAll()
             .anyRequest().authenticated())
+        .oauth2Login(o -> o.successHandler(oauth2SuccessHandler))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
