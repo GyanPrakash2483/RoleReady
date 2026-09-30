@@ -1,21 +1,47 @@
 package com.roleready.analysis;
 
-import java.util.Map;
+import java.util.*;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AnalysisService {
+  private final ScoringService scoring;
+  private final EvaluationEngine evaluator;
+  private final RequirementMatcher matcher;
 
-  private final ScoringService scoringService;
-
-  public AnalysisService(ScoringService scoringService) {
-    this.scoringService = scoringService;
+  public AnalysisService(ScoringService scoring,EvaluationEngine evaluator,RequirementMatcher matcher){
+    this.scoring=scoring;this.evaluator=evaluator;this.matcher=matcher;
   }
 
-  public Map<String, Object> analyze(Map<String, Object> body) {
-    // TODO: 1) call AiService.analyzeResumeAgainstJd 2) validate schema (FR-LLM-002)
-    // 3) compute score in Java via ScoringService (spec §13: never blindly trust LLM score)
-    int score = scoringService.computeDefault();
-    return Map.of("roleReadiness", score, "status", "analysis-stub");
+  @SuppressWarnings("unchecked")
+  public Map<String,Object> analyze(Map<String,Object> body){
+    Map<String,Object> resume=(Map<String,Object>)body.getOrDefault("resume",Map.of());
+    Map<String,Object> jd=(Map<String,Object>)body.getOrDefault("jd",Map.of());
+    String resumeText=String.valueOf(body.getOrDefault("resumeText",resume));
+    Map<String,Integer> scores=evaluator.evaluate(resume,jd);
+
+    List<Requirement> requirements=new ArrayList<>();
+    addRequirements(requirements,jd.get("requiredSkills"),"requiredSkills","mandatory");
+    addRequirements(requirements,jd.get("preferredSkills"),"preferredSkills","preferred");
+    addRequirements(requirements,jd.get("responsibilities"),"responsibilityAlignment","mandatory");
+    List<ResumeEvidence> evidence=matcher.match(requirements,resumeText);
+    int penalty=(int)evidence.stream().filter(e->e.classification().equals("missing"))
+        .mapToInt(e->e.criticality().equals("mandatory")?10:3).sum();
+    penalty=Math.min(30,penalty);
+    int score=scoring.compute(scores,penalty);
+    Map<String,Object> explanations=new LinkedHashMap<>();
+    for(var e:scores.entrySet()) explanations.put(e.getKey(),Map.of("score",e.getValue(),"weighted",scoring.weightedScores(scores).get(e.getKey())));
+    return Map.of("roleReadiness",score,"categoryScores",scores,"explanations",explanations,
+        "evidence",evidence,"mandatoryPenalty",penalty);
+  }
+
+  private void addRequirements(List<Requirement> out,Object value,String category,String criticality){
+    if(value instanceof Collection<?> c) for(Object item:c){
+      if(item instanceof Map<?,?> m){
+        String name=String.valueOf(m.getOrDefault("name",""));
+        String crit=String.valueOf(m.getOrDefault("criticality",criticality));
+        if(!name.isBlank()) out.add(new Requirement(name,category,crit));
+      } else if(!String.valueOf(item).isBlank()) out.add(new Requirement(String.valueOf(item),category,criticality));
+    }
   }
 }
