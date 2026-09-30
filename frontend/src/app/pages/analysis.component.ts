@@ -1,16 +1,25 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  standalone: true,
-  template: `
+  standalone:true,
+  imports:[RouterLink],
+  template:`
     <section class="rr-card">
-      <h2>Analysis dashboard</h2>
-      <p>Role Readiness: <strong>–/100</strong> (wired to POST /api/analysis).</p>
-      <ul>
-        <li>Required skills / experience / responsibilities / keywords / ATS …</li>
-        <li>Strong · Partial · Weak · Missing · Unclear + evidence</li>
-      </ul>
+      <h2>Analysis</h2>
+      <p>Role Readiness analysis results will appear here.</p>
+      @if (guestLimitReached) {
+        <div class="rr-card">
+          <h3>Free guest limit reached</h3>
+          <p>Sign in to continue analyzing resumes and job descriptions.</p>
+          <a class="rr-btn" routerLink="/account">Sign in / Register</a>
+        </div>
+      } @else {
+        <p>Complete an analysis to see your score, matches, gaps, and evidence.</p>
+      }
     </section>
   `
 })
-export class AnalysisComponent {}
+export class AnalysisComponent {
+  guestLimitReached=false;
+}
