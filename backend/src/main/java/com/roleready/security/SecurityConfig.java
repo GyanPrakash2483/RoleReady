@@ -16,10 +16,12 @@ public class SecurityConfig {
 
   private final JwtAuthFilter jwtAuthFilter;
   private final OAuth2LoginSuccessHandler oauth2SuccessHandler;
+  private final AiRateLimitFilter aiRateLimitFilter;
 
-  public SecurityConfig(JwtAuthFilter jwtAuthFilter, OAuth2LoginSuccessHandler oauth2SuccessHandler) {
+  public SecurityConfig(JwtAuthFilter jwtAuthFilter, OAuth2LoginSuccessHandler oauth2SuccessHandler, AiRateLimitFilter aiRateLimitFilter) {
     this.jwtAuthFilter = jwtAuthFilter;
     this.oauth2SuccessHandler = oauth2SuccessHandler;
+    this.aiRateLimitFilter = aiRateLimitFilter;
   }
 
   @Bean
@@ -35,7 +37,8 @@ public class SecurityConfig {
             .requestMatchers("/api/session/**").permitAll()
             .anyRequest().authenticated())
         .oauth2Login(o -> o.successHandler(oauth2SuccessHandler))
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(aiRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(jwtAuthFilter, AiRateLimitFilter.class);
     return http.build();
   }
 
