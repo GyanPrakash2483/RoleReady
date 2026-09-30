@@ -37,6 +37,13 @@ public class AiService {
     return callGeminiJson(prompts.render("jd-extraction", Map.of("text", text)));
   }
 
+  public JsonNode generateSuggestions(Map<String,Object> body) {
+    return callGeminiJson(prompts.render("improvement-suggestion", Map.of(
+        "resume", body.getOrDefault("resume", Map.of()),
+        "jd", body.getOrDefault("jd", Map.of()),
+        "analysis", body.getOrDefault("analysis", Map.of()))));
+  }
+
   public JsonNode generateQuestions(JsonNode analysis) {
     return callGeminiJson(prompts.render("question-generation", Map.of("analysis", analysis.toString())));
   }
