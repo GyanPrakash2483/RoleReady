@@ -38,8 +38,8 @@ public class AnalysisService {
   private void addRequirements(List<Requirement> out,Object value,String category,String criticality){
     if(value instanceof Collection<?> c) for(Object item:c){
       if(item instanceof Map<?,?> m){
-        String name=String.valueOf(m.getOrDefault("name",""));
-        String crit=String.valueOf(m.getOrDefault("criticality",criticality));
+        String name=String.valueOf(m.containsKey("name")?m.get("name"):"");
+        String crit=String.valueOf(m.containsKey("criticality")?m.get("criticality"):criticality);
         if(!name.isBlank()) out.add(new Requirement(name,category,crit));
       } else if(!String.valueOf(item).isBlank()) out.add(new Requirement(String.valueOf(item),category,criticality));
     }
