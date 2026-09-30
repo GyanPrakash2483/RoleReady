@@ -1,13 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ApiService } from '../services/api.service';
 
 @Component({
-  standalone: true,
-  template: `
+  standalone:true,
+  template:`
     <section class="rr-card">
       <h2>Export</h2>
-      <button class="rr-btn">Download PDF</button>
-      <p>Markdown / LaTeX buttons appear when that was your input format.</p>
+      <button class="rr-btn" (click)="exportMarkdown()">Markdown</button>
+      <button class="rr-btn" (click)="exportLatex()">LaTeX</button>
+      <button class="rr-btn" (click)="exportPdf()">PDF</button>
+      <p>{{status}}</p>
+      @if (content) { <pre>{{content}}</pre> }
     </section>
   `
 })
-export class ExportComponent {}
+export class ExportComponent {
+  private api=inject(ApiService); content=''; status='';
+  private resume(){return JSON.parse(localStorage.getItem('rr_resume')||'{}');}
+  exportMarkdown(){this.api.exportMarkdown(this.resume()).subscribe({next:(r:any)=>{this.content=r.data?.markdown??'';this.status='Markdown generated.'}});}
+  exportLatex(){this.api.exportLatex(this.resume()).subscribe({next:(r:any)=>{this.content=r.data?.latex??'';this.status='LaTeX generated.'}});}
+  exportPdf(){this.api.exportPdf(this.resume()).subscribe({next:(blob:any)=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='roleready-resume.pdf';a.click();URL.revokeObjectURL(url);this.status='PDF generated.'}});}
+}
