@@ -31,6 +31,17 @@ public class OptimizationService {
     return Map.of("changes",result);
   }
 
+  public Map<String,Object> finalResume(Map<String,Object> resume){
+    Map<String,Object> result=new LinkedHashMap<>(resume);
+    for(Map<String,Object> change:changes.values()){
+      if("accept".equals(change.get("decision"))){
+        String section=String.valueOf(change.get("section"));
+        result.put(section,change.get("after"));
+      }
+    }
+    return result;
+  }
+
   public Map<String,Object> reviewChange(String id,Map<String,Object> body){
     Map<String,Object> change=changes.get(id);
     if(change==null) throw new IllegalArgumentException("Optimization change not found");
