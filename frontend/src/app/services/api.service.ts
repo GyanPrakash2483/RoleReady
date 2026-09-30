@@ -40,4 +40,7 @@ export class ApiService {
   answerQuestion(id: string, answer: string) { return this.http.post(`${this.base}/api/questions/${id}/answer`, { answer }); }
   generateSuggestions(body: unknown) { return this.http.post(`${this.base}/api/suggestions`, body); }
   reviewChange(id: string, decision: string) { return this.http.put(`${this.base}/api/optimization/changes/${id}`, { decision }); }
+  exportMarkdown(body: unknown) { return this.http.post(`${this.base}/api/export/markdown`, body); }
+  exportLatex(body: unknown) { return this.http.post(`${this.base}/api/export/latex`, body); }
+  exportPdf(body: unknown) { return this.http.post(`${this.base}/api/export/pdf`, body, { responseType: 'blob' }); }
 }
