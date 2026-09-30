@@ -1,11 +1,21 @@
 import { Component, inject } from '@angular/core';
 import { ApiService } from '../services/api.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   standalone:true,
+  imports:[FormsModule],
   template:`
     <section class="rr-card">
       <h2>Export</h2>
+      <label>Source format
+        <select [(ngModel)]="sourceFormat">
+          <option value="original">Original/source format</option>
+          <option value="pdf">PDF</option>
+          <option value="md">Markdown</option>
+          <option value="tex">LaTeX</option>
+        </select>
+      </label>
       <button class="rr-btn" (click)="exportMarkdown()">Markdown</button>
       <button class="rr-btn" (click)="exportLatex()">LaTeX</button>
       <button class="rr-btn" (click)="exportPdf()">PDF</button>
@@ -16,7 +26,7 @@ import { ApiService } from '../services/api.service';
   `
 })
 export class ExportComponent {
-  private api=inject(ApiService); content=''; status=''; pdfUrl:any=null;
+  private api=inject(ApiService); content=''; status=''; pdfUrl:any=null; sourceFormat='original';
   private resume(){return JSON.parse(localStorage.getItem('rr_resume')||'{}');}
   exportMarkdown(){this.api.exportMarkdown(this.resume()).subscribe({next:(r:any)=>{this.content=r.data?.markdown??'';this.status='Markdown generated.'}});}
   exportLatex(){this.api.exportLatex(this.resume()).subscribe({next:(r:any)=>{this.content=r.data?.latex??'';this.status='LaTeX generated.'}});}
