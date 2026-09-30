@@ -12,6 +12,7 @@ import { ApiService } from '../services/api.service';
       <input [(ngModel)]="password" type="password" placeholder="password" />
       <button class="rr-btn" (click)="login()">Login</button>
       <button class="rr-btn" (click)="register()">Register</button>
+      <button class="rr-btn" (click)="google()">Continue with Google</button>
       <p>{{ status }}</p>
       <p>Google OAuth + verify-email + reset-password plug in here (FR-AUTH-002/004/005).</p>
     </section>
@@ -28,6 +29,7 @@ export class AccountComponent {
       error: () => (this.status = 'Login failed.')
     });
   }
+  google() { window.location.href = 'http://localhost:8080/oauth2/authorization/google'; }
   register() {
     this.api.register(this.email, this.password).subscribe({
       next: (r: any) => { localStorage.setItem('rr_token', r.data?.token ?? ''); this.status = 'Registered.'; },
