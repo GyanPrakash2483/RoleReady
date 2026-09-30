@@ -1,3 +1,6 @@
-# Prompt: question-generation
-# Generate clarification questions ONLY for gaps where user input could help.
-# Never invent facts. Return STRICT JSON. TODO per FR-AI-020/030.
+# Clarification questions
+Generate only questions where the candidate can provide missing factual information.
+Never invent facts and never suggest that an unconfirmed claim is true.
+Return strict JSON array: [{"question":string,"reason":string,"relatedCategory":string}]
+Analysis:
+{{analysis}}
