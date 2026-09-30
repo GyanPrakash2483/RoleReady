@@ -1,18 +1,20 @@
 package com.roleready.ai;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-/**
- * Prompts are application components (§28), not inline strings.
- * Each logical task gets its own template file under ai/prompts/.
- */
 @Service
 public class PromptService {
-
-  public String render(String name, Map<String, Object> vars) {
-    // TODO: load ai/prompts/<name>.md from classpath and interpolate {{vars}}.
-    // Stub keeps the seam so prompt iteration doesn't touch business logic.
-    return "[prompt:" + name + "] " + vars;
+  public String render(String name, Map<String,Object> vars) {
+    try {
+      var resource=new ClassPathResource("ai/prompts/"+name+".md");
+      String template=new String(resource.getInputStream().readAllBytes(),StandardCharsets.UTF_8);
+      String result=template;
+      for(var e:vars.entrySet()) result=result.replace("{{"+e.getKey()+"}}",String.valueOf(e.getValue()));
+      return result;
+    } catch(IOException e) { throw new IllegalStateException("AI prompt is unavailable: "+name,e); }
   }
 }
