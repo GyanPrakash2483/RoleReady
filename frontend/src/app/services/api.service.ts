@@ -35,6 +35,7 @@ export class ApiService {
     return this.http.post(`${this.base}/api/optimization`, body);
   }
   analyzeResume(body: unknown) { return this.http.post(`${this.base}/api/analysis`, body); }
+  createSession() { return this.http.post(`${this.base}/api/session`, {}); }
   generateQuestions(analysis: unknown) { return this.http.post(`${this.base}/api/questions`, { analysis }); }
   answerQuestion(id: string, answer: string) { return this.http.post(`${this.base}/api/questions/${id}/answer`, { answer }); }
   generateSuggestions(body: unknown) { return this.http.post(`${this.base}/api/suggestions`, body); }
