@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
+import { ApiService } from './services/api.service';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -25,4 +26,24 @@ import { RouterLink, RouterOutlet } from '@angular/router';
     </div>
   `
 })
-export class AppComponent {}
+export class AppComponent {
+  private api=inject(ApiService);
+  private sessionId=localStorage.getItem('rr_session_id')||'';
+
+  constructor(){
+    if(!this.sessionId){
+      this.api.createSession().subscribe({next:(r:any)=>{
+        this.sessionId=r.data??r;
+        localStorage.setItem('rr_session_id',this.sessionId);
+      }});
+    }
+  }
+
+  @HostListener('window:beforeunload')
+  endSession(){
+    if(this.sessionId){
+      navigator.sendBeacon(`${location.protocol}//${location.host.replace(':4200',':8080')}/api/session/${this.sessionId}/end`,new Blob([], {type:'text/plain'}));
+      localStorage.removeItem('rr_session_id');
+    }
+  }
+}
