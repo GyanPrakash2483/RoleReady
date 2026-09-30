@@ -32,6 +32,7 @@ public class SecurityConfig {
             .requestMatchers("/actuator/health", "/api/health", "/v3/api-docs/**", "/swagger-ui/**", "/oauth2/**", "/login/**").permitAll()
             .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/analysis", "/api/resume/upload").permitAll()
+            .requestMatchers("/api/session/**").permitAll()
             .anyRequest().authenticated())
         .oauth2Login(o -> o.successHandler(oauth2SuccessHandler))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
