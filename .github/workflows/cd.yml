@@ -1,0 +1,31 @@
+name: cd
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/roleready-backend:${{ github.sha }} ./backend
+
+      - name: Build frontend image
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/roleready-frontend:${{ github.sha }} ./frontend
+
+      - name: Deploy backend to Render
+        env:
+          RENDER_BACKEND_DEPLOY_HOOK: ${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}
+        run: |
+          test -n "$RENDER_BACKEND_DEPLOY_HOOK"
+          curl --fail --silent --show-error -X POST "$RENDER_BACKEND_DEPLOY_HOOK"
+
+      - name: Deploy frontend to Render
+        env:
+          RENDER_FRONTEND_DEPLOY_HOOK: ${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}
+        run: |
+          test -n "$RENDER_FRONTEND_DEPLOY_HOOK"
+          curl --fail --silent --show-error -X POST "$RENDER_FRONTEND_DEPLOY_HOOK"
