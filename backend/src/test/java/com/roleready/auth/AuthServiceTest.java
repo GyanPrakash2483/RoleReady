@@ -21,11 +21,14 @@ class AuthServiceTest {
 
   @Mock UserRepository users;
   @Mock JwtService jwtService;
-  @InjectMocks AuthService authService;
+  @Mock VerificationTokenRepository verificationTokens;
+  @Mock PasswordResetTokenRepository resetTokens;
+  @Mock org.springframework.mail.javamail.JavaMailSender mailSender;
 
   @Test
   void registrationStoresOnlyEncodedPassword() {
-    AuthService service = new AuthService(users, new BCryptPasswordEncoder(), jwtService);
+    AuthService service = new AuthService(users, new BCryptPasswordEncoder(), jwtService,
+        verificationTokens, resetTokens, mailSender, "http://localhost:4200", "");
     when(users.findByEmail("test@example.com")).thenReturn(java.util.Optional.empty());
     when(users.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
     when(jwtService.generateToken(any())).thenReturn("token");
