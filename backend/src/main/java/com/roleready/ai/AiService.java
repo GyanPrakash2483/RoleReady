@@ -18,12 +18,14 @@ public class AiService {
   private final AppProperties props;
   private final RestClient gemini;
   private final PromptService prompts;
+  private final StructuredAiResponseParser parser;
   private final ObjectMapper mapper = new ObjectMapper();
 
-  public AiService(AppProperties props, RestClient gemini, PromptService prompts) {
+  public AiService(AppProperties props, RestClient gemini, PromptService prompts, StructuredAiResponseParser parser) {
     this.props = props;
     this.gemini = gemini;
     this.prompts = prompts;
+    this.parser = parser;
   }
 
   public JsonNode analyzeResumeAgainstJd(Map<String, Object> resume, Map<String, Object> jd) {
@@ -56,12 +58,9 @@ public class AiService {
           .body(body)
           .retrieve()
           .body(String.class);
-      // TODO: robust extraction of candidates[0].content.parts[0].text + schema validation (FR-LLM-002/003)
-      JsonNode root = mapper.readTree(raw);
-      return root;
+      return parser.extractJson(raw);
     } catch (Exception e) {
-      // TODO: retry on transient failures (NFR-REL-003), map to user-friendly error (NFR-REL-001)
-      throw new IllegalStateException("AI request failed. Please try again.", e);
+      throw new IllegalStateException("AI request failed. Please try again.");
     }
   }
 }
