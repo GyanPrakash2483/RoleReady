@@ -18,6 +18,8 @@ export class ApiService {
     form.append('file', file);
     return this.http.post(`${this.base}/api/resume/upload`, form);
   }
+  createResume(body: unknown) { return this.http.post(`${this.base}/api/resume/create`, body); }
+  updateResume(body: unknown) { return this.http.put(`${this.base}/api/resume/current`, body); }
   analyzeJd(text: string) {
     return this.http.post(`${this.base}/api/job-description/analyze`, { text });
   }
